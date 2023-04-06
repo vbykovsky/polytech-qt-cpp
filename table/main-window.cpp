@@ -1,12 +1,12 @@
 #include<QDebug>
 
-#include "mainwindow.h"
-#include "./ui_mainwindow.h"
+#include "main-window.h"
+#include "./ui_main-window.h"
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    this->findDialog = new Find::FindDialog(this);
+    this->findDialog = new Dialogs::FindDialog(this);
 
     QCursor cellCursor1 = QCursor(QPixmap(":/resources/icons/cell-cursor.svg"), 5, 5);
     ui->tableWidget->setCursor(cellCursor1);
@@ -26,7 +26,7 @@ QTableWidgetItem* MainWindow::getSelectedItem()
 {
     return ui->tableWidget->item(this->selectedRow, this->selectedColumn);
 }
-\
+
 
 void MainWindow::updateStatusBarText()
 {
@@ -195,14 +195,14 @@ void MainWindow::on_tableWidget_cellDoubleClicked(int row, int column)
     ui->tableWidget->blockSignals(false);
 }
 
-QDialog::DialogCode MainWindow::on_actionSave_triggered()
+bool MainWindow::on_actionSave_triggered()
 {
     if(this->fileName == ""){
         this->fileName = QFileDialog::getSaveFileName(this, "Save file", "./", "*.txt");
     }
 
     if(this->fileName == ""){
-        return QDialog::Rejected;
+        return false;
     }
 
     QFile file(this->fileName);
@@ -231,39 +231,42 @@ QDialog::DialogCode MainWindow::on_actionSave_triggered()
         }
     }
 
-    if (file.open(QIODevice::ReadWrite)) {
-        QTextStream stream(&file);
-
-        for(int i = 0; i <= maxRow; i++){
-            for(int j = 0; j <= maxColumn; j++){
-                auto item = ui->tableWidget->item(i, j);
-
-                if(item){
-                    stream << item->text();
-                }
-
-                stream << ",";
-            }
-
-            stream << "\n";
-        }
-
-        file.close();
-
-        this->hasChanged = true;
+    if (!file.open(QIODevice::ReadWrite)) {
+        return false;
     }
 
-    return QDialog::Accepted;
+    QTextStream stream(&file);
+
+    for(int i = 0; i <= maxRow; i++){
+        for(int j = 0; j <= maxColumn; j++){
+            auto item = ui->tableWidget->item(i, j);
+
+            if(item){
+                stream << item->text();
+            }
+
+            stream << ",";
+        }
+
+        stream << "\n";
+    }
+
+    file.close();
+
+    this->hasChanged = true;
+
+    return true;
 }
 
 
-QDialog::DialogCode MainWindow::on_actionOpen_triggered()
+bool MainWindow::on_actionOpen_triggered()
 {
     auto openedFileName = QFileDialog::getOpenFileName(this, "Open file", "./", "*.txt");
 
     QFile file(openedFileName);
+
     if(!file.open(QIODevice::ReadOnly)) {
-        return QDialog::Rejected;
+        return false;
     }
 
     this->fileName = openedFileName;
@@ -302,7 +305,7 @@ QDialog::DialogCode MainWindow::on_actionOpen_triggered()
 
     file.close();
 
-    return QDialog::Accepted;
+    return true;
 }
 
 
@@ -317,10 +320,8 @@ void MainWindow::on_actionNew_triggered()
                 );
 
         if(shouldSaveChanges == QMessageBox::Yes){
-            if(this->fileName != ""){
-                if(this->on_actionSave_triggered() == QDialog::Rejected){
-                    return;
-                }
+            if(this->on_actionSave_triggered() == QDialog::Rejected){
+                return;
             }
         }
     }

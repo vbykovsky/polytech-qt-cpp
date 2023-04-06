@@ -1,21 +1,21 @@
-#include "finddialog.h"
-#include "ui_finddialog.h"
+#include "find-dialog.h"
+#include "ui_find-dialog.h"
 
-Find::FindDialog::FindDialog(QWidget *parent) :
+Dialogs::FindDialog::FindDialog(QWidget *parent) :
     QDialog(parent, Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint),
-    ui(new Find::Ui::FindDialog)
+    ui(new Dialogs::Ui::FindDialog)
 {
     ui->setupUi(this);
 
     connect(this, SIGNAL(finished(int)), this, SLOT(on_finished(int)));
 }
 
-Find::FindDialog::~FindDialog()
+Dialogs::FindDialog::~FindDialog()
 {
     delete ui;
 }
 
-void Find::FindDialog::on_findButton_clicked()
+void Dialogs::FindDialog::on_findButton_clicked()
 {
     auto query = ui->findInput->text();
 
@@ -40,17 +40,17 @@ void Find::FindDialog::on_findButton_clicked()
     emit search(query, flags, this->index);
 }
 
-void Find::FindDialog::on_closeButton_clicked()
+void Dialogs::FindDialog::on_closeButton_clicked()
 {
     this->reject();
 }
 
-void Find::FindDialog::on_findInput_textChanged(const QString &arg1)
+void Dialogs::FindDialog::on_findInput_textChanged(const QString &arg1)
 {
     this->index = 0;
 }
 
-void Find::FindDialog::on_finished(int result)
+void Dialogs::FindDialog::on_finished(int result)
 {
     ui->findInput->clear();
     ui->matchCaseCheckbox->setCheckState(Qt::Unchecked);

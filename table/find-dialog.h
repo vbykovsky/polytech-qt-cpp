@@ -5,7 +5,7 @@
 #include <QMainWindow>
 
 
-namespace Find {
+namespace Dialogs {
     namespace Ui { class FindDialog; }
 
     class FindDialog : public QDialog

@@ -15,12 +15,12 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        finddialog.h
-        finddialog.cpp
-        finddialog.ui
+        main-window.cpp
+        main-window.h
+        main-window.ui
+        find-dialog.h
+        find-dialog.cpp
+        find-dialog.ui
         resources.qrc
 )
 

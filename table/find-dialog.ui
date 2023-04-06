@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Find::FindDialog</class>
- <widget class="QDialog" name="Find::FindDialog">
+ <class>Dialogs::FindDialog</class>
+ <widget class="QDialog" name="Dialogs::FindDialog">
   <property name="geometry">
    <rect>
     <x>0</x>

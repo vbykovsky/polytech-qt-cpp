@@ -13,7 +13,7 @@
 #include <QTableWidgetItem>
 #include <QRegularExpression>
 
-#include "./finddialog.h"
+#include "./find-dialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,7 +24,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
-    Find::FindDialog* findDialog = nullptr;
+    Dialogs::FindDialog* findDialog = nullptr;
 
 private:
     int selectedRow = 0;
@@ -59,9 +59,9 @@ private slots:
 
     void on_tableWidget_cellDoubleClicked(int row, int column);
 
-    QDialog::DialogCode on_actionSave_triggered();
+    bool on_actionSave_triggered();
 
-    QDialog::DialogCode on_actionOpen_triggered();
+    bool on_actionOpen_triggered();
 
     void on_actionNew_triggered();
 
