@@ -8,8 +8,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->setupUi(this);
     this->findDialog = new Dialogs::FindDialog(this);
 
-    QCursor cellCursor1 = QCursor(QPixmap(":/resources/icons/cell-cursor.svg"), 5, 5);
-    ui->tableWidget->setCursor(cellCursor1);
+    QCursor cellCursor = QCursor(QPixmap(":/resources/icons/cell-cursor.svg"), 5, 5);
+    ui->tableWidget->setCursor(cellCursor);
     ui->tableWidget->verticalHeader()->setDefaultAlignment(Qt::AlignCenter);
     ui->tableWidget->verticalHeader()->setStyleSheet("::section:checked { color: #217346; background-color: #D2D2D2; border-right: 2px solid #217346; }");
     ui->tableWidget->horizontalHeader()->setStyleSheet("::section:checked { color: #217346; background-color: #D2D2D2; border-bottom: 2px solid #217346; }");
@@ -25,6 +25,12 @@ MainWindow::~MainWindow()
 QTableWidgetItem* MainWindow::getSelectedItem()
 {
     return ui->tableWidget->item(this->selectedRow, this->selectedColumn);
+}
+
+
+void MainWindow::updateWindowTitle(){
+    auto fileName = this->fileName.split("/").takeLast();
+    this->setWindowTitle(this->BASE_TITLE + (fileName != "" ? " - " + fileName : "") + (this->hasChanged ? "*" : ""));
 }
 
 
@@ -130,15 +136,22 @@ void MainWindow::handleCellTextChanged(int row, int column, QString newText)
         return;
     }
 
-    this->hasChanged = true;
 
     ui->tableWidget->blockSignals(true);
 
-    item->setToolTip(cellContent);
-    item->setText(handleFormula(item->toolTip()));
+    if(cellContent != item->toolTip()){
+        this->hasChanged = true;
+        item->setToolTip(cellContent);
+    }
+
+    if(handleFormula(item->toolTip()) != item->text()){
+        this->hasChanged = true;
+        item->setText(handleFormula(item->toolTip()));
+    }
 
     ui->tableWidget->blockSignals(false);
 
+    this->updateWindowTitle();
     this->updateStatusBarText();
     this->updateFormulaInputText();
     this->updateSelectedCellInputText();
@@ -253,7 +266,9 @@ bool MainWindow::on_actionSave_triggered()
 
     file.close();
 
-    this->hasChanged = true;
+    this->hasChanged = false;
+
+    this->updateWindowTitle();
 
     return true;
 }
@@ -305,6 +320,8 @@ bool MainWindow::on_actionOpen_triggered()
 
     file.close();
 
+    this->updateWindowTitle();
+
     return true;
 }
 
@@ -332,6 +349,8 @@ void MainWindow::on_actionNew_triggered()
     ui->tableWidget->blockSignals(true);
     ui->tableWidget->clearContents();
     ui->tableWidget->blockSignals(false);
+
+    this->updateWindowTitle();
 }
 
 
@@ -353,6 +372,7 @@ void MainWindow::on_actionCut_triggered()
         clipboard->setText("");
     }
 
+    this->updateWindowTitle();
     this->updateStatusBarText();
     this->updateFormulaInputText();
     this->updateSelectedCellInputText();
@@ -391,6 +411,7 @@ void MainWindow::on_actionPaste_triggered()
         ui->tableWidget->setItem(this->selectedRow, this->selectedColumn, item);
     }
 
+    this->updateWindowTitle();
     this->updateStatusBarText();
     this->updateFormulaInputText();
     this->updateSelectedCellInputText();
@@ -405,6 +426,7 @@ void MainWindow::on_actionDelete_triggered()
         delete item;
     }
 
+    this->updateWindowTitle();
     this->updateStatusBarText();
     this->updateFormulaInputText();
     this->updateSelectedCellInputText();

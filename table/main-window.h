@@ -24,6 +24,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
+    const QString BASE_TITLE = "Excel";
+
+private:
     Dialogs::FindDialog* findDialog = nullptr;
 
 private:
@@ -44,6 +47,7 @@ private:
     QTableWidgetItem* getSelectedItem();
 
 private:
+    void updateWindowTitle();
     void updateStatusBarText();
     void updateFormulaInputText();
     void updateSelectedCellInputText();
