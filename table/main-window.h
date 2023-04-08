@@ -4,7 +4,6 @@
 #include <QMap>
 #include <QList>
 #include <QFile>
-#include <QJSEngine>
 #include <QClipboard>
 #include <QTextStream>
 #include <QFileDialog>
@@ -13,6 +12,7 @@
 #include <QTableWidgetItem>
 #include <QRegularExpression>
 
+#include "./table-cell.h"
 #include "./find-dialog.h"
 
 QT_BEGIN_NAMESPACE
@@ -44,7 +44,7 @@ public:
     ~MainWindow();
 
 private:
-    QTableWidgetItem* getSelectedItem();
+    TableCell* getSelectedItem();
 
 private:
     void updateWindowTitle();
@@ -53,7 +53,6 @@ private:
     void updateSelectedCellInputText();
 
 private:
-    QString handleFormula(QString formula);
     void handleCellTextChanged(int row, int column, QString newText);
 
 private slots:

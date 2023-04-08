@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->setupUi(this);
     this->findDialog = new Dialogs::FindDialog(this);
 
+    ui->tableWidget->setItemPrototype(new TableCell);
+
     QCursor cellCursor = QCursor(QPixmap(":/resources/icons/cell-cursor.svg"), 5, 5);
     ui->tableWidget->setCursor(cellCursor);
     ui->tableWidget->verticalHeader()->setDefaultAlignment(Qt::AlignCenter);
@@ -22,9 +24,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QTableWidgetItem* MainWindow::getSelectedItem()
+TableCell* MainWindow::getSelectedItem()
 {
-    return ui->tableWidget->item(this->selectedRow, this->selectedColumn);
+    return TableCell::cast(ui->tableWidget->item(this->selectedRow, this->selectedColumn));
 }
 
 
@@ -43,7 +45,7 @@ void MainWindow::updateStatusBarText()
 
     if(selectedItem){
         cellContent = selectedItem->text();
-        cellFormula = selectedItem->toolTip();
+        cellFormula = selectedItem->formula();
     }
 
     auto rowStr = QString::number(this->selectedRow + 1);
@@ -59,7 +61,7 @@ void MainWindow::updateFormulaInputText()
     QString cellFormula = "";
 
     if(selectedItem){
-        cellFormula = selectedItem->toolTip();
+        cellFormula = selectedItem->formula();
     }
 
     if(cellFormula != ui->formulaInput->text())
@@ -76,77 +78,33 @@ void MainWindow::updateSelectedCellInputText()
     ui->selectedCellInput->setText(columnStr + rowStr + ":");
 }
 
-QString MainWindow::handleFormula(QString mayBeFormula)
-{
-    if(!mayBeFormula.size() || mayBeFormula[0] != '='){
-        return mayBeFormula;
-    }
-
-    auto formula = mayBeFormula.remove(0, 1);
-
-    if(formula == "")
-    {
-        return "";
-    }
-
-    QRegularExpression regExp("[A-Za-z][1-9][0-9]{0,2}");
-
-    for (const QRegularExpressionMatch &match : regExp.globalMatch(formula)) {
-        auto cellPosition = match.captured(0);
-
-        int row = QString(cellPosition).remove(0, 1).toInt() - 1;
-        int column = int(cellPosition[0].toUpper().toLatin1()) - int(QChar('A').toLatin1());
-
-        auto item = ui->tableWidget->item(row, column);
-
-        if(item != nullptr)
-        {
-            formula.replace(cellPosition, item->text());
-        }
-        else
-        {
-            formula.replace(cellPosition, "0");
-        }
-
-    }
-
-    QJSEngine myEngine;
-    QJSValue value = myEngine.evaluate(formula);
-
-    if(value.isError() || value.isNull() || value.isUndefined()){
-        return "#####";
-    }
-
-    return value.toString();
-}
-
 void MainWindow::handleCellTextChanged(int row, int column, QString newText)
 {
-    auto item = ui->tableWidget->item(row, column);
+    auto item = TableCell::cast(ui->tableWidget->item(row, column));
 
     if(item == nullptr){
-        item = new QTableWidgetItem("");
+        item = new TableCell("");
         ui->tableWidget->setItem(row, column, item);
     }
 
     auto cellContent = newText;
-    auto cellFormula = item->toolTip();
+    auto cellFormula = item->formula();
 
-    if(handleFormula(cellFormula) == cellContent){
+    if(TableCell::evaluateFormula(ui->tableWidget, cellFormula) == cellContent){
         return;
     }
 
 
     ui->tableWidget->blockSignals(true);
 
-    if(cellContent != item->toolTip()){
+    if(cellContent != item->formula()){
         this->hasChanged = true;
-        item->setToolTip(cellContent);
+        item->setFormula(cellContent);
     }
 
-    if(handleFormula(item->toolTip()) != item->text()){
+    if(TableCell::evaluateFormula(ui->tableWidget, item->formula()) != item->text()){
         this->hasChanged = true;
-        item->setText(handleFormula(item->toolTip()));
+        item->setText(TableCell::evaluateFormula(ui->tableWidget, item->formula()));
     }
 
     ui->tableWidget->blockSignals(false);
@@ -180,10 +138,10 @@ void MainWindow::on_tableWidget_currentCellChanged(int currentRow, int currentCo
 
     for(int i = 0; i< ui->tableWidget->rowCount(); i++){
         for(int j = 0; j< ui->tableWidget->columnCount(); j++){
-            auto item = ui->tableWidget->item(i, j);
+            auto item = TableCell::cast(ui->tableWidget->item(i, j));
 
             if(item){
-                this->handleCellTextChanged(item->row(), item->column(), item->toolTip());
+                this->handleCellTextChanged(item->row(), item->column(), item->formula());
             }
         }
     }
@@ -195,7 +153,7 @@ void MainWindow::on_tableWidget_currentCellChanged(int currentRow, int currentCo
 
 void MainWindow::on_tableWidget_cellDoubleClicked(int row, int column)
 {
-    auto item = ui->tableWidget->item(row, column);
+    auto item = TableCell::cast(ui->tableWidget->item(row, column));
 
     if(item == nullptr){
         return;
@@ -203,7 +161,7 @@ void MainWindow::on_tableWidget_cellDoubleClicked(int row, int column)
 
     ui->tableWidget->blockSignals(true);
 
-    item->setText(item->toolTip());
+    item->setText(item->formula());
 
     ui->tableWidget->blockSignals(false);
 }
@@ -300,8 +258,8 @@ bool MainWindow::on_actionOpen_triggered()
             auto cellData = fields[j];
 
             if(cellData != ""){
-                auto item = new QTableWidgetItem(cellData);
-                item->setToolTip(cellData);
+                auto item = new TableCell(cellData);
+                item->setFormula(cellData);
 
                 ui->tableWidget->setItem(row, j, item);
             }
@@ -365,7 +323,7 @@ void MainWindow::on_actionCut_triggered()
         clipboard->setText(selectedItem->text());
 
         selectedItem->setText("");
-        selectedItem->setToolTip("");
+        selectedItem->setFormula("");
     }
     else
     {
@@ -407,7 +365,7 @@ void MainWindow::on_actionPaste_triggered()
     }
     else
     {
-        item = new QTableWidgetItem(clipboard->text());
+        item = new TableCell(clipboard->text());
         ui->tableWidget->setItem(this->selectedRow, this->selectedColumn, item);
     }
 

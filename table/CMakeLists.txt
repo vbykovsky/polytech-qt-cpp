@@ -18,6 +18,8 @@ set(PROJECT_SOURCES
         main-window.cpp
         main-window.h
         main-window.ui
+        table-cell.h
+        table-cell.cpp
         find-dialog.h
         find-dialog.cpp
         find-dialog.ui
