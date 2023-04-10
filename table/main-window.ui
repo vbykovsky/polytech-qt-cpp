@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
-    <normaloff>:/resources/icons/excel.svg</normaloff>:/resources/icons/excel.svg</iconset>
+    <normaloff>:/resources/icons/excel.png</normaloff>:/resources/icons/excel.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">* {
@@ -99,7 +99,7 @@ WindowTitleBar {
      </layout>
     </item>
     <item>
-     <widget class="QTableWidget" name="tableWidget">
+     <widget class="Table" name="tableWidget">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -1313,8 +1313,21 @@ QTableView::item:focus{
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuOpenRecent">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Open recent</string>
+     </property>
+     <property name="icon">
+      <iconset resource="resources.qrc">
+       <normaloff>:/resources/icons/folder.png</normaloff>:/resources/icons/folder.png</iconset>
+     </property>
+    </widget>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
+    <addaction name="menuOpenRecent"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="actionExit"/>
@@ -1329,7 +1342,7 @@ QTableView::item:focus{
      </property>
      <property name="icon">
       <iconset resource="resources.qrc">
-       <normaloff>:/resources/icons/ic_fluent_select_object_24_regular.svg</normaloff>:/resources/icons/ic_fluent_select_object_24_regular.svg</iconset>
+       <normaloff>:/resources/icons/selection.png</normaloff>:/resources/icons/selection.png</iconset>
      </property>
      <addaction name="actionSelectRow"/>
      <addaction name="actionSelectColumn"/>
@@ -1378,6 +1391,15 @@ QTableView::item:focus{
    <property name="styleSheet">
     <string notr="true">QToolBar {
 	background:#F3F3F3;
+}
+
+QToolButton {
+	border: 1px solid transparent;
+}
+
+QToolButton:hover {
+	background-color: #D2D2D2;
+	border: 1px solid #D2D2D2;
 }</string>
    </property>
    <property name="movable">
@@ -1388,8 +1410,8 @@ QTableView::item:focus{
    </property>
    <property name="iconSize">
     <size>
-     <width>20</width>
-     <height>20</height>
+     <width>30</width>
+     <height>25</height>
     </size>
    </property>
    <property name="toolButtonStyle">
@@ -1416,7 +1438,7 @@ QTableView::item:focus{
   <action name="actionNew">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_document_add_24_regular.svg</normaloff>:/resources/icons/ic_fluent_document_add_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/new-document.png</normaloff>:/resources/icons/new-document.png</iconset>
    </property>
    <property name="text">
     <string>New</string>
@@ -1428,7 +1450,7 @@ QTableView::item:focus{
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_folder_open_24_regular.svg</normaloff>:/resources/icons/ic_fluent_folder_open_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/folder.png</normaloff>:/resources/icons/folder.png</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -1440,7 +1462,7 @@ QTableView::item:focus{
   <action name="actionSave">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_save_24_regular.svg</normaloff>:/resources/icons/ic_fluent_save_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/diskette.png</normaloff>:/resources/icons/diskette.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -1452,7 +1474,7 @@ QTableView::item:focus{
   <action name="actionSaveAs">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_save_arrow_right_24_regular.svg</normaloff>:/resources/icons/ic_fluent_save_arrow_right_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/diskette.png</normaloff>:/resources/icons/diskette.png</iconset>
    </property>
    <property name="text">
     <string>Save As</string>
@@ -1464,7 +1486,7 @@ QTableView::item:focus{
   <action name="actionExit">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_door_arrow_left_24_regular.svg</normaloff>:/resources/icons/ic_fluent_door_arrow_left_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/logout.png</normaloff>:/resources/icons/logout.png</iconset>
    </property>
    <property name="text">
     <string>Exit</string>
@@ -1476,7 +1498,7 @@ QTableView::item:focus{
   <action name="actionCut">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_cut_24_regular.svg</normaloff>:/resources/icons/ic_fluent_cut_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/cut.png</normaloff>:/resources/icons/cut.png</iconset>
    </property>
    <property name="text">
     <string>Cut</string>
@@ -1488,7 +1510,7 @@ QTableView::item:focus{
   <action name="actionCopy">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_copy_24_regular.svg</normaloff>:/resources/icons/ic_fluent_copy_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/copy.png</normaloff>:/resources/icons/copy.png</iconset>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -1500,7 +1522,7 @@ QTableView::item:focus{
   <action name="actionPaste">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_clipboard_paste_24_regular.svg</normaloff>:/resources/icons/ic_fluent_clipboard_paste_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/paste.png</normaloff>:/resources/icons/paste.png</iconset>
    </property>
    <property name="text">
     <string>Paste</string>
@@ -1512,7 +1534,7 @@ QTableView::item:focus{
   <action name="actionDelete">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_delete_24_regular.svg</normaloff>:/resources/icons/ic_fluent_delete_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/bin.png</normaloff>:/resources/icons/bin.png</iconset>
    </property>
    <property name="text">
     <string>Delete</string>
@@ -1524,7 +1546,7 @@ QTableView::item:focus{
   <action name="actionFind">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_search_24_regular.svg</normaloff>:/resources/icons/ic_fluent_search_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/find.png</normaloff>:/resources/icons/find.png</iconset>
    </property>
    <property name="text">
     <string>Find</string>
@@ -1536,7 +1558,7 @@ QTableView::item:focus{
   <action name="actionSelectRow">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_table_insert_row_24_regular.svg</normaloff>:/resources/icons/ic_fluent_table_insert_row_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/vertical.png</normaloff>:/resources/icons/vertical.png</iconset>
    </property>
    <property name="text">
     <string>Row</string>
@@ -1545,7 +1567,7 @@ QTableView::item:focus{
   <action name="actionSelectColumn">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_table_insert_column_24_regular.svg</normaloff>:/resources/icons/ic_fluent_table_insert_column_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/row.png</normaloff>:/resources/icons/row.png</iconset>
    </property>
    <property name="text">
     <string>Column</string>
@@ -1554,7 +1576,7 @@ QTableView::item:focus{
   <action name="actionSelectAll">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_table_24_regular.svg</normaloff>:/resources/icons/ic_fluent_table_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/cells.png</normaloff>:/resources/icons/cells.png</iconset>
    </property>
    <property name="text">
     <string>All</string>
@@ -1563,7 +1585,7 @@ QTableView::item:focus{
   <action name="actionRecalculate">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_calculator_24_regular.svg</normaloff>:/resources/icons/ic_fluent_calculator_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/calculator.png</normaloff>:/resources/icons/calculator.png</iconset>
    </property>
    <property name="text">
     <string>Recalculate</string>
@@ -1572,7 +1594,7 @@ QTableView::item:focus{
   <action name="actionSort">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_arrow_sort_24_regular.svg</normaloff>:/resources/icons/ic_fluent_arrow_sort_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/sort.png</normaloff>:/resources/icons/sort.png</iconset>
    </property>
    <property name="text">
     <string>Sort</string>
@@ -1581,7 +1603,7 @@ QTableView::item:focus{
   <action name="actionShowGrid">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_table_24_regular.svg</normaloff>:/resources/icons/ic_fluent_table_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/cells.png</normaloff>:/resources/icons/cells.png</iconset>
    </property>
    <property name="text">
     <string>Show Grid</string>
@@ -1590,7 +1612,7 @@ QTableView::item:focus{
   <action name="actionAutoRecalculate">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_calculator_24_regular.svg</normaloff>:/resources/icons/ic_fluent_calculator_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/calculator.png</normaloff>:/resources/icons/calculator.png</iconset>
    </property>
    <property name="text">
     <string>Auto-Recalculate</string>
@@ -1602,7 +1624,7 @@ QTableView::item:focus{
   <action name="actionAbot">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_question_circle_24_regular.svg</normaloff>:/resources/icons/ic_fluent_question_circle_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/question.png</normaloff>:/resources/icons/question.png</iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -1611,7 +1633,7 @@ QTableView::item:focus{
   <action name="actionAboutQt">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_question_circle_24_regular.svg</normaloff>:/resources/icons/ic_fluent_question_circle_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/question.png</normaloff>:/resources/icons/question.png</iconset>
    </property>
    <property name="text">
     <string>About Qt</string>
@@ -1620,13 +1642,20 @@ QTableView::item:focus{
   <action name="actionGotoCell">
    <property name="icon">
     <iconset resource="resources.qrc">
-     <normaloff>:/resources/icons/ic_fluent_arrow_right_24_regular.svg</normaloff>:/resources/icons/ic_fluent_arrow_right_24_regular.svg</iconset>
+     <normaloff>:/resources/icons/right-arrow.png</normaloff>:/resources/icons/right-arrow.png</iconset>
    </property>
    <property name="text">
     <string>Go to Cell</string>
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Table</class>
+   <extends>QTableWidget</extends>
+   <header>D:\Documents\QtProjects\polytech\table\table.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>

@@ -1,24 +1,23 @@
 <RCC>
     <qresource prefix="/resources">
-        <file>icons/excel.svg</file>
-        <file>icons/ic_fluent_arrow_right_24_regular.svg</file>
-        <file>icons/ic_fluent_clipboard_paste_24_regular.svg</file>
-        <file>icons/ic_fluent_copy_24_regular.svg</file>
-        <file>icons/ic_fluent_cut_24_regular.svg</file>
-        <file>icons/ic_fluent_delete_24_regular.svg</file>
-        <file>icons/ic_fluent_document_add_24_regular.svg</file>
-        <file>icons/ic_fluent_door_arrow_left_24_regular.svg</file>
-        <file>icons/ic_fluent_folder_open_24_regular.svg</file>
-        <file>icons/ic_fluent_save_24_regular.svg</file>
-        <file>icons/ic_fluent_save_arrow_right_24_regular.svg</file>
-        <file>icons/ic_fluent_search_24_regular.svg</file>
-        <file>icons/ic_fluent_select_object_24_regular.svg</file>
-        <file>icons/ic_fluent_arrow_sort_24_regular.svg</file>
-        <file>icons/ic_fluent_calculator_24_regular.svg</file>
-        <file>icons/ic_fluent_table_24_regular.svg</file>
-        <file>icons/ic_fluent_table_insert_column_24_regular.svg</file>
-        <file>icons/ic_fluent_table_insert_row_24_regular.svg</file>
-        <file>icons/ic_fluent_question_circle_24_regular.svg</file>
         <file>icons/cell-cursor.svg</file>
+        <file>icons/excel.png</file>
+        <file>icons/new-document.png</file>
+        <file>icons/folder.png</file>
+        <file>icons/diskette.png</file>
+        <file>icons/copy.png</file>
+        <file>icons/cut.png</file>
+        <file>icons/paste.png</file>
+        <file>icons/find.png</file>
+        <file>icons/logout.png</file>
+        <file>icons/bin.png</file>
+        <file>icons/right-arrow.png</file>
+        <file>icons/selection.png</file>
+        <file>icons/cells.png</file>
+        <file>icons/row.png</file>
+        <file>icons/vertical.png</file>
+        <file>icons/calculator.png</file>
+        <file>icons/question.png</file>
+        <file>icons/sort.png</file>
     </qresource>
 </RCC>

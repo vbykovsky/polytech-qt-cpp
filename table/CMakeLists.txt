@@ -18,11 +18,16 @@ set(PROJECT_SOURCES
         main-window.cpp
         main-window.h
         main-window.ui
+        table.h
+        table.cpp
         table-cell.h
         table-cell.cpp
         find-dialog.h
         find-dialog.cpp
         find-dialog.ui
+        goto-cell-dialog.h
+        goto-cell-dialog.cpp
+        goto-cell-dialog.ui
         resources.qrc
 )
 
