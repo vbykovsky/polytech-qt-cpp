@@ -19,5 +19,6 @@
         <file>icons/calculator.png</file>
         <file>icons/question.png</file>
         <file>icons/sort.png</file>
+        <file>images/splashscreen.png</file>
     </qresource>
 </RCC>

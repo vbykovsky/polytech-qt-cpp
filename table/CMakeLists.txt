@@ -28,6 +28,9 @@ set(PROJECT_SOURCES
         goto-cell-dialog.h
         goto-cell-dialog.cpp
         goto-cell-dialog.ui
+        sort-dialog.h
+        sort-dialog.cpp
+        sort-dialog.ui
         resources.qrc
 )
 

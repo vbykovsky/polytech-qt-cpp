@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>716</width>
-    <height>580</height>
+    <width>598</width>
+    <height>456</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -1298,6 +1298,127 @@ QTableView::item:focus{
       </column>
      </widget>
     </item>
+    <item>
+     <widget class="QWidget" name="sheetsDock" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>24</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QWidget {
+	background: #E6E6E6;
+	border-bottom: 1px solid #999999;
+	border-top: 1px solid #999999;
+}
+
+QRadioButton::indicator {
+    width: 0;
+	height: 0;
+}
+
+QRadioButton {
+	padding: 2px 7px 2px 2px;
+	margin: 3px 0;
+    background: #E6E6E6;
+	border-top: 0;
+	border-bottom: 2px solid #E6E6E6;
+	border-right: 1px solid #999999;
+}
+
+QRadioButton:hover {
+    font-weight: 600;
+}
+
+QRadioButton:checked {
+	margin: 0 0 3px 0;
+    background: white;
+	border-top: 2px solid white;
+	border-bottom: 2px solid #217346;
+	color: #217346;
+    font-weight: 600;
+}</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>20</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <spacer name="sheetsDockSpacer1">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="addSheetButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>18</width>
+           <height>24</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>18</width>
+           <height>24</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+	border: 1px solid #999999;
+	margin: 3px 0;
+}</string>
+         </property>
+         <property name="text">
+          <string>+</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="sheetsDockSpacer2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>534</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -1305,7 +1426,7 @@ QTableView::item:focus{
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>716</width>
+     <width>598</width>
      <height>22</height>
     </rect>
    </property>
@@ -1601,6 +1722,9 @@ QToolButton:hover {
    </property>
   </action>
   <action name="actionShowGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/resources/icons/cells.png</normaloff>:/resources/icons/cells.png</iconset>
@@ -1610,6 +1734,9 @@ QToolButton:hover {
    </property>
   </action>
   <action name="actionAutoRecalculate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="resources.qrc">
      <normaloff>:/resources/icons/calculator.png</normaloff>:/resources/icons/calculator.png</iconset>
@@ -1653,7 +1780,7 @@ QToolButton:hover {
   <customwidget>
    <class>Table</class>
    <extends>QTableWidget</extends>
-   <header>D:\Documents\QtProjects\polytech\table\table.h</header>
+   <header>..\..\..\table\table.h</header>
   </customwidget>
  </customwidgets>
  <resources>

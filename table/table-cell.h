@@ -13,6 +13,8 @@ class TableCell : public QTableWidgetItem
 
 private:
     QString _formula = "";
+    int _lastRow = -1;
+    int _lastColumn = -1;
 
 public:
     static TableCell* cast(QTableWidgetItem* item);
@@ -21,6 +23,7 @@ public:
 public:
     TableCell();
     TableCell(QString content);
+    TableCell(QString content, QString formula);
     TableCell(const TableCell &other);
 
 public:
@@ -31,6 +34,18 @@ public:
 
     inline void setFormula(const QString &newFormula)
         { this->_formula = newFormula; }
+
+    inline int lastRow() const
+        { return this->_lastRow; }
+
+    inline void setLastRow(const int &newLastRow)
+        { this->_lastRow = newLastRow; }
+
+    inline int lastColumn() const
+        { return this->_lastColumn; }
+
+    inline void setLastColumn(const int &newLastColumn)
+        { this->_lastColumn = newLastColumn; }
 };
 
 #endif // TABLECELL_H

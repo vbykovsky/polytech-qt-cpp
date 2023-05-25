@@ -1,6 +1,0 @@
-ID,Name,Surname,Email,Phone
-1,User1,Surname1,email1@mail.ru,+79999999999
-2,User2,Surname2,email2@mail.ru,+79999999999
-3,User3,Surname3,email3@mail.ru,+79999999999
-4,User4,Surname4,email4@mail.ru,+79999999999
-5,User5,Surname5,email5@mail.ru,+79999999999

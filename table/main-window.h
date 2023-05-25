@@ -4,17 +4,23 @@
 #include <QMap>
 #include <QList>
 #include <QFile>
+#include <QSettings>
 #include <QClipboard>
 #include <QTextStream>
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QCloseEvent>
+#include <QRadioButton>
 #include <QTableWidgetItem>
 #include <QRegularExpression>
 
 #include "./table-cell.h"
+#include "./sort-dialog.h"
 #include "./find-dialog.h"
 #include "./goto-cell-dialog.h"
+
+#define EXCEL_ICON QIcon(QPixmap(":/resources/icons/excel.png"))
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -29,15 +35,20 @@ private:
 
 private:
     Dialogs::FindDialog* findDialog = nullptr;
+    Dialogs::SortDialog* sortDialog = nullptr;
     Dialogs::GotoCellDialog* gotoCellDialog = nullptr;
 
 private:
+    QString sheet = "";
+    QMap<QString, QList<TableCell*>> sheets = { };
+
     QString fileName = "";
     QStringList recentFiles = { };
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void closeEvent(QCloseEvent *bar);
 
 private:
     void update();
@@ -49,10 +60,12 @@ private:
 
 private:
     bool openFile(QString fileName);
+    void saveSettings();
+    void uploadSettings();
+    void createSheet();
+    void changeSheet(QString);
 
 private slots:
-    void on_formulaInput_returnPressed();
-
     void on_tableWidget_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
 
     void on_tableWidget_cellDoubleClicked(int row, int column);
@@ -88,6 +101,10 @@ private slots:
     void on_actionSelectAll_triggered();
 
     void on_actionGotoCell_triggered();
+
+    void on_actionSort_triggered();
+
+    void on_addSheetButton_clicked();
 
 private:
     Ui::MainWindow *ui;

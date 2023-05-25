@@ -28,6 +28,7 @@ namespace Dialogs {
     private:
         Ui::GotoCellDialog *ui;
     };
+
 }
 
 #endif // DIALOGS_GOTOCELLDIALOG_H

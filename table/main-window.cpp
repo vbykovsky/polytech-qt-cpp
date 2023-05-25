@@ -7,11 +7,15 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 {
     ui->setupUi(this);
     this->findDialog = new Dialogs::FindDialog(this);
+    this->sortDialog = new Dialogs::SortDialog(this);
     this->gotoCellDialog = new Dialogs::GotoCellDialog(this);
 
     connect(this->findDialog, SIGNAL(search(QString,Qt::MatchFlags,int)), this, SLOT(on_search(QString,Qt::MatchFlags,int)));
 
+    this->createSheet();
+
     ui->menuOpenRecent->setDisabled(true);
+    this->uploadSettings();
     this->update();
 }
 
@@ -21,6 +25,28 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+void MainWindow::closeEvent (QCloseEvent *event)
+{
+    if(ui->tableWidget->isChanged()){
+        auto shouldSaveChanges =
+                QMessageBox::question(
+                    this,
+                    "New file",
+                    "You have unsaved changes. Do you want to save it?"
+                );
+
+        if(shouldSaveChanges == QMessageBox::Yes){
+            if(this->on_actionSave_triggered() == QDialog::Rejected){
+                return;
+            }
+        }
+    }
+
+    this->saveSettings();
+
+    event->accept();
+}
 
 void MainWindow::update()
 {
@@ -93,17 +119,92 @@ void MainWindow::updateRecentFilesMenu()
     ui->menuOpenRecent->setDisabled(false);
     ui->menuOpenRecent->clear();
 
-    QIcon excelIcon(QPixmap(":/resources/icons/excel.png"));
-
     for(int i = 0; i < 5 && i < this->recentFiles.size(); i++)
     {
-        auto action = new QAction(excelIcon, recentFiles[i].split("/").takeLast());
+        auto action = new QAction(EXCEL_ICON, recentFiles[i].split("/").takeLast());
 
         connect(action, &QAction::triggered, [=](){ this->on_actionOpenRecent_triggered(i); });
 
         ui->menuOpenRecent->insertAction(nullptr, action);
         ui->menuOpenRecent->close();
     }
+}
+
+
+void MainWindow::saveSettings()
+{
+    QSettings settings("vbykvosky", "Excel");
+
+    settings.setValue("geometry", this->geometry());
+    settings.setValue("recentFiles", this->recentFiles);
+    settings.setValue("showGrid", ui->actionShowGrid->isChecked());
+    settings.setValue("autoRecalculate", ui->actionAutoRecalculate->isChecked());
+}
+
+
+void MainWindow::uploadSettings()
+{
+    QSettings settings("vbykvosky", "Excel");
+
+    QRect rect = settings.value("geometry", QRect(200, 200, 400, 400)).toRect();
+    move(rect.topLeft());
+    resize(rect.size());
+
+    recentFiles = settings.value("recentFiles").toStringList();
+
+    bool showGrid = settings.value("showGrid", true).toBool();
+    ui->actionShowGrid->setChecked(showGrid);
+
+    bool autoRecalculate = settings.value("autoRecalculate", true).toBool();
+    ui->actionAutoRecalculate->setChecked(autoRecalculate);
+}
+
+
+void MainWindow::createSheet()
+{
+    this->sheets[this->sheet] = ui->tableWidget->getItems();
+    ui->tableWidget->clearContents();
+
+    this->sheet = "Sheet " + QString::number(ui->sheetsDock->children().length() - 1);
+    this->sheets[this->sheet] = {};
+
+    auto newSheetsRadioButton = new QRadioButton(this->sheet);
+
+    ui->sheetsDock->layout()->removeItem(ui->sheetsDockSpacer1);
+    ui->sheetsDock->layout()->removeWidget(ui->addSheetButton);
+    ui->sheetsDock->layout()->removeItem(ui->sheetsDockSpacer2);
+
+    ui->sheetsDock->layout()->addWidget(newSheetsRadioButton);
+
+    ui->sheetsDock->layout()->addItem(ui->sheetsDockSpacer1);
+    ui->sheetsDock->layout()->addWidget(ui->addSheetButton);
+    ui->sheetsDock->layout()->addItem(ui->sheetsDockSpacer2);
+
+    connect(newSheetsRadioButton, &QRadioButton::clicked, this, [newSheetsRadioButton, this](bool checked) {
+        this->sheets[this->sheet] = ui->tableWidget->getItems();
+        this->changeSheet(newSheetsRadioButton->text());
+    });
+
+    newSheetsRadioButton->click();
+}
+
+
+void MainWindow::changeSheet(QString sheet)
+{
+    if(!this->sheets.contains(sheet))
+    {
+        this->sheets[sheet] = {};
+    }
+
+    this->sheet = sheet;
+
+    ui->tableWidget->clearContents();
+    ui->tableWidget->setItems(this->sheets[sheet]);
+
+    ui->tableWidget->setSelectedRow(0);
+    ui->tableWidget->setSelectedColumn(0);
+
+    this->update();
 }
 
 
@@ -128,7 +229,7 @@ bool MainWindow::openFile(QString fileName)
     ui->tableWidget->clearContents();
     ui->tableWidget->blockSignals(false);
 
-    ui->tableWidget->read(fin);
+    fin >> ui->tableWidget;
     ui->tableWidget->setIsChanged(false);
 
     file.close();
@@ -141,15 +242,15 @@ bool MainWindow::openFile(QString fileName)
 
 void MainWindow::on_formulaInput_textChanged(const QString &newText)
 {
-    ui->tableWidget->onCellTextChanged(ui->tableWidget->selectedRow(), ui->tableWidget->selectedColumn(), newText);
+    auto item = TableCell::cast(ui->tableWidget->item(ui->tableWidget->selectedRow(), ui->tableWidget->selectedColumn()));
 
-    this->update();
-}
+    if(item == nullptr){
+        item = new TableCell("");
+        ui->tableWidget->setItem(ui->tableWidget->selectedRow(), ui->tableWidget->selectedColumn(), item);
+    }
 
-
-void MainWindow::on_formulaInput_returnPressed()
-{
-    ui->tableWidget->onCellTextChanged(ui->tableWidget->selectedRow(), ui->tableWidget->selectedColumn(), ui->formulaInput->text());
+    item->setFormula(newText);
+    item->setText(newText);
 
     this->update();
 }
@@ -172,7 +273,7 @@ void MainWindow::on_tableWidget_cellDoubleClicked(int row, int column)
 bool MainWindow::on_actionSave_triggered()
 {
     if(this->fileName == ""){
-        this->fileName = QFileDialog::getSaveFileName(this, "Save file", "./", "*.txt");
+        this->fileName = QFileDialog::getSaveFileName(this, "Save file", "./", "CSV(*.csv);;Spredsheet(*.sp)");
     }
 
     if(this->fileName == ""){
@@ -187,7 +288,7 @@ bool MainWindow::on_actionSave_triggered()
 
     QTextStream stream(&file);
 
-    ui->tableWidget->write(stream);
+    stream << ui->tableWidget;
 
     file.close();
 
@@ -199,7 +300,7 @@ bool MainWindow::on_actionSave_triggered()
 
 bool MainWindow::on_actionOpen_triggered()
 {
-    auto openedFileName = QFileDialog::getOpenFileName(this, "Open file", "./", "*.txt");
+    auto openedFileName = QFileDialog::getOpenFileName(this, "Open file", "./", "CSV(*.csv);;Spredsheet(*.sp)");
 
     return openFile(openedFileName);
 }
@@ -212,7 +313,7 @@ void MainWindow::on_actionNew_triggered()
                 QMessageBox::question(
                     this,
                     "New file",
-                    "You are createing new file, but have unsaved changes. Do you want to save it?"
+                    "You are creating new file, but have unsaved changes. Do you want to save it?"
                 );
 
         if(shouldSaveChanges == QMessageBox::Yes){
@@ -235,21 +336,8 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionCut_triggered()
 {
-    QClipboard *clipboard = QGuiApplication::clipboard();
-
-    auto selectedItem = ui->tableWidget->selectedItem();
-
-    if(selectedItem != nullptr)
-    {
-        clipboard->setText(selectedItem->text());
-
-        selectedItem->setText("");
-        selectedItem->setFormula("");
-    }
-    else
-    {
-        clipboard->setText("");
-    }
+    this->on_actionCopy_triggered();
+    this->on_actionDelete_triggered();
 
     this->update();
 }
@@ -259,16 +347,31 @@ void MainWindow::on_actionCopy_triggered()
 {
     QClipboard *clipboard = QGuiApplication::clipboard();
 
-    auto selectedItem = ui->tableWidget->selectedItem();
+    auto selectedRange = ui->tableWidget->selectedRange();
 
-    if(selectedItem != nullptr)
+    QString text = "";
+
+    for(int i = selectedRange.topRow(); i <= selectedRange.bottomRow(); i++)
     {
-        clipboard->setText(selectedItem->text());
+        for(int j = selectedRange.leftColumn(); j <= selectedRange.rightColumn(); j++)
+        {
+            auto item = ui->tableWidget->item(i, j);
+
+            if(item != nullptr)
+            {
+                text += item->text() + "\t";
+            }
+            else
+            {
+                text += "\t";
+            }
+        }
+
+        text += "\n";
     }
-    else
-    {
-        clipboard->setText("");
-    }
+
+    clipboard->setText(text);
+
 }
 
 
@@ -276,15 +379,60 @@ void MainWindow::on_actionPaste_triggered()
 {
     QClipboard *clipboard = QGuiApplication::clipboard();
 
-    auto item = ui->tableWidget->selectedItem();
+    QList<QList<QString>> clipboardData;
 
-    if(item != nullptr){
-        item->setText(clipboard->text());
-    }
-    else
+    auto rows = clipboard->text().split("\n");
+
+    for(int i = 0; i < rows.size() - 1; i++)
     {
-        item = new TableCell(clipboard->text());
-        ui->tableWidget->setItem(ui->tableWidget->selectedRow(), ui->tableWidget->selectedColumn(), item);
+
+        auto cellsTexts = rows[i].split("\t");
+        clipboardData.push_back({});
+
+        for(int j = 0; j < cellsTexts.size() - 1; j++)
+        {
+            clipboardData[i].push_back(cellsTexts[j]);
+        }
+    }
+
+    if(clipboardData.size() == 0)
+    {
+        return;
+    }
+
+    auto selectedRow = ui->tableWidget->selectedRow();
+    auto selectedColumn = ui->tableWidget->selectedColumn();
+
+    for(int i = 0; i < clipboardData.size(); i++)
+    {
+        for(int j = 0; j < clipboardData[0].size(); j++)
+        {
+            auto item = ui->tableWidget->item(selectedRow + i, selectedColumn + j);
+            auto tableCell = TableCell::cast(item);
+
+            if(item != nullptr){
+                if(clipboardData[i][j] != "")
+                {
+                    tableCell->setText(clipboardData[i][j]);
+                    tableCell->setFormula(clipboardData[i][j]);
+                    ui->tableWidget->onCurrentCellChanged(selectedRow + i, selectedColumn + j, i == 0 ? selectedRow : selectedRow + i - 1, j == 0 ? selectedColumn : selectedColumn + j - 1);
+                }
+                else
+                {
+                    delete item;
+                }
+            }
+            else
+            {
+                if(clipboardData[i][j] != "")
+                {
+                    tableCell = new TableCell(clipboardData[i][j], clipboardData[i][j]);
+                    ui->tableWidget->setItem(selectedRow + i, selectedColumn + j, tableCell);
+                    ui->tableWidget->onCurrentCellChanged(selectedRow + i, selectedColumn + j, i == 0 ? selectedRow : selectedRow + i - 1, j == 0 ? selectedColumn : selectedColumn + j - 1);
+                }
+            }
+
+        }
     }
 
     this->update();
@@ -293,10 +441,23 @@ void MainWindow::on_actionPaste_triggered()
 
 void MainWindow::on_actionDelete_triggered()
 {
-    auto item = ui->tableWidget->selectedItem();
+    auto selectedRange = ui->tableWidget->selectedRange();
 
-    if(item != nullptr){
-        delete item;
+    auto selectedRow = ui->tableWidget->selectedRow();
+    auto selectedColumn = ui->tableWidget->selectedColumn();
+
+    for(int i = selectedRange.topRow(); i <= selectedRange.bottomRow(); i++)
+    {
+        for(int j = selectedRange.leftColumn(); j <= selectedRange.rightColumn(); j++)
+        {
+            auto item = ui->tableWidget->item(i, j);
+
+            if(item != nullptr)
+            {
+                delete item;
+                ui->tableWidget->onCurrentCellChanged(i, j, i == 0 ? selectedRow : i - 1, j == 0 ? selectedColumn : j - 1);
+            }
+        }
     }
 
     this->update();
@@ -359,3 +520,21 @@ void MainWindow::on_actionGotoCell_triggered()
     this->gotoCellDialog->cellLocation = "";
 }
 
+
+void MainWindow::on_actionSort_triggered()
+{
+    this->sortDialog->setColumns(ui->tableWidget->selectedRange().leftColumn(), ui->tableWidget->selectedRange().rightColumn());
+
+    if(this->sortDialog->exec()){
+        CellsCompare compare(this->sortDialog->keys(), this->sortDialog->ascending());
+        ui->tableWidget->sort(compare);
+
+        this->update();
+    }
+}
+
+
+void MainWindow::on_addSheetButton_clicked()
+{
+   this->createSheet();
+}

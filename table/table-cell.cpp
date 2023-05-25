@@ -6,6 +6,9 @@ TableCell::TableCell()
 TableCell::TableCell(QString content): QTableWidgetItem(content)
 { }
 
+TableCell::TableCell(QString content, QString formula): QTableWidgetItem(content), _formula(formula)
+{ }
+
 TableCell* TableCell::cast(QTableWidgetItem* item)
 {
     return static_cast<TableCell*>(item);
