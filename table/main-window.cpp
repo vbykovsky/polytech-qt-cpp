@@ -308,6 +308,7 @@ bool MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionNew_triggered()
 {
+    /*
     if(ui->tableWidget->isChanged()){
         auto shouldSaveChanges =
                 QMessageBox::question(
@@ -331,6 +332,10 @@ void MainWindow::on_actionNew_triggered()
     ui->tableWidget->blockSignals(false);
 
     this->update();
+    */
+
+    MainWindow* childWindow = new MainWindow();
+    childWindow->show();
 }
 
 
@@ -359,7 +364,7 @@ void MainWindow::on_actionCopy_triggered()
 
             if(item != nullptr)
             {
-                text += item->text() + "\t";
+                text += item->text() + (j == selectedRange.rightColumn() ? "" : "\t");
             }
             else
             {
@@ -385,11 +390,10 @@ void MainWindow::on_actionPaste_triggered()
 
     for(int i = 0; i < rows.size() - 1; i++)
     {
-
         auto cellsTexts = rows[i].split("\t");
         clipboardData.push_back({});
 
-        for(int j = 0; j < cellsTexts.size() - 1; j++)
+        for(int j = 0; j < cellsTexts.size(); j++)
         {
             clipboardData[i].push_back(cellsTexts[j]);
         }
@@ -483,7 +487,7 @@ void MainWindow::on_actionOpenRecent_triggered(int fileIndex)
 
 void MainWindow::on_actionExit_triggered()
 {
-    this->close();
+    qApp->closeAllWindows();
 }
 
 
@@ -538,3 +542,9 @@ void MainWindow::on_addSheetButton_clicked()
 {
    this->createSheet();
 }
+
+void MainWindow::on_actionClose_triggered()
+{
+    this->close();
+}
+

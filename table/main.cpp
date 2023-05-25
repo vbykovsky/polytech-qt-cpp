@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    MainWindow* w = new MainWindow();
 
     QSplashScreen splash;
     splash.setPixmap(QPixmap(":/resources/images/splashscreen.png"));
@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
     QTimer::singleShot(3000, &loop, SLOT(quit()));
     loop.exec();
 
-    w.show();
-    splash.finish(&w);
+    w->show();
+    splash.finish(w);
 
     return a.exec();
 }

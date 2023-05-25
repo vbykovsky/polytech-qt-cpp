@@ -106,6 +106,8 @@ private slots:
 
     void on_addSheetButton_clicked();
 
+    void on_actionClose_triggered();
+
 private:
     Ui::MainWindow *ui;
 };
