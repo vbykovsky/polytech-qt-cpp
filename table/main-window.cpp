@@ -137,7 +137,7 @@ void MainWindow::saveSettings()
 
     settings.setValue("geometry", this->geometry());
     settings.setValue("recentFiles", this->recentFiles);
-    settings.setValue("showGrid", ui->actionShowGrid->isChecked());
+    settings.setValue("showGrid", ui->tableWidget->showGrid());
     settings.setValue("autoRecalculate", ui->actionAutoRecalculate->isChecked());
 }
 
@@ -154,6 +154,7 @@ void MainWindow::uploadSettings()
 
     bool showGrid = settings.value("showGrid", true).toBool();
     ui->actionShowGrid->setChecked(showGrid);
+    ui->tableWidget->setShowGrid(showGrid);
 
     bool autoRecalculate = settings.value("autoRecalculate", true).toBool();
     ui->actionAutoRecalculate->setChecked(autoRecalculate);
@@ -546,5 +547,11 @@ void MainWindow::on_addSheetButton_clicked()
 void MainWindow::on_actionClose_triggered()
 {
     this->close();
+}
+
+
+void MainWindow::on_actionShowGrid_toggled(bool showGrid)
+{
+    ui->tableWidget->setShowGrid(showGrid);
 }
 

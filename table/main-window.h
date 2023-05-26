@@ -108,6 +108,8 @@ private slots:
 
     void on_actionClose_triggered();
 
+    void on_actionShowGrid_toggled(bool arg1);
+
 private:
     Ui::MainWindow *ui;
 };
